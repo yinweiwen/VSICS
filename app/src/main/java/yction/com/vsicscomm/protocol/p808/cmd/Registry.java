@@ -60,7 +60,6 @@ public class Registry extends CmdReq {
     public void onMsg(Msg msg) {
         try {
             byte[] bd = msg.body();
-            System.out.println(Utils.bytesToHexString(bd));
             ByteBufferUnsigned bb = new ByteBufferUnsigned(bd);
             bb.getUnsignedShort();
             Result res = Result.valueOf(bb.getUnsignedByte());

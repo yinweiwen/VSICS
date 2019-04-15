@@ -9,11 +9,11 @@
     tools:context="yction.com.vsicscomm.MainActivity">
 
     <Button
-        android:id="@+id/ButtonLogin"
+        android:id="@+id/ButtonReport"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Login" />
+        android:text="Report" />
 
     <Button
         android:id="@+id/ButtonConsole"

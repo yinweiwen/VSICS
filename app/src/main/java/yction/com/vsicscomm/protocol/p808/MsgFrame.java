@@ -61,7 +61,7 @@ public class MsgFrame {
             Head head = new Head(tmp);
             if (head.property.size != udata.length - 3 - head.size()) {
                 System.out.println("消息长度与定义不符");
-//                return null;
+                return null;
             }
             byte[] body = new byte[head.property.size];
             System.arraycopy(udata, 1 + head.size(), body, 0, body.length);

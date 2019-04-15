@@ -6,10 +6,9 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-import yction.com.vsicscomm.utils.Log;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -26,11 +25,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Intent serviceIntent = new Intent(this, NetService.class);
         bindService(serviceIntent, this, BIND_AUTO_CREATE);
 
-        final Button btnLogin = (Button) findViewById(R.id.ButtonLogin);
+        final Button btnLogin = (Button) findViewById(R.id.ButtonReport);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "stated");
+                if(netService!=null){
+                    Log.i(TAG, "report ADAS");
+                    netService.reportADAS();
+                }
             }
         });
     }

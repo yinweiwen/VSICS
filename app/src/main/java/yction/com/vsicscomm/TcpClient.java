@@ -1,5 +1,7 @@
 package yction.com.vsicscomm;
 
+import android.util.Log;
+
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncSocket;
 import com.koushikdutta.async.ByteBufferList;
@@ -32,7 +34,6 @@ import yction.com.vsicscomm.protocol.p808.Protocol;
 import yction.com.vsicscomm.protocol.p808.cmd.Auth;
 import yction.com.vsicscomm.protocol.p808.cmd.Hearbeat;
 import yction.com.vsicscomm.protocol.p808.cmd.Registry;
-import yction.com.vsicscomm.utils.Log;
 import yction.com.vsicscomm.utils.Utils;
 
 import static yction.com.vsicscomm.utils.Utils.bytesToHexString;
@@ -102,7 +103,7 @@ public class TcpClient {
     private MsgBuffer _buffer = new MsgBuffer();
 
     public TcpClient(TcpClientListener listener) throws IOException {
-        mListener = new WeakReference<TcpClientListener>(listener);
+        mListener = new WeakReference<>(listener);
         CmdReq._client = this;
     }
 
@@ -218,7 +219,7 @@ public class TcpClient {
                             @Override
                             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
                                 byte[] data = bb.getAllByteArray();
-                                Log.d(LOG_TAG, "rec:" + bytesToHexString(data));
+                                Log.i(LOG_TAG, "rec:" + bytesToHexString(data));
 
                                 List<MsgFrame> frames = MsgFrameBuffer.TryDecode(data);
                                 for (MsgFrame frame : frames) {
@@ -273,7 +274,7 @@ public class TcpClient {
      */
     private void onData(Msg msg) {
         try {
-            Log.i(LOG_TAG,"on msg:"+msg.toString());
+            Log.i(LOG_TAG, "on msg:" + msg.toString());
             if (!msg.isReady()) { // 分包应答
                 Msg ack = mListener.get().onSeperatePackage(msg);
                 if (ack != null) {
@@ -339,7 +340,7 @@ public class TcpClient {
      * @return 返回的消息; 发送失败时返回空
      */
     public Msg send(final Msg msg) {
-        Log.i(LOG_TAG,"send:"+msg.toString());
+        Log.i(LOG_TAG, "send:" + msg.toString());
         Msg res = null;
         for (int i = 0; i < msg.frames().length; i++) {
             AckRes ar = writeSync(msg.frames()[i]);
@@ -367,7 +368,7 @@ public class TcpClient {
      * @return 答复发送成功/失败
      */
     public boolean sendAck(final Msg msg) {
-        Log.i(LOG_TAG,"send ack:"+msg.toString());
+        Log.i(LOG_TAG, "send ack:" + msg.toString());
         boolean flag = true;
         for (int i = 0; i < msg.frames().length; i++) {
             MsgFrame frame = msg.frames()[i];
@@ -397,7 +398,7 @@ public class TcpClient {
      * @param msg 待发送消息
      */
     public boolean sendAsync(final Msg msg) {
-        Log.i(LOG_TAG,"send async:"+msg.toString());
+        Log.i(LOG_TAG, "send async:" + msg.toString());
         for (MsgFrame frame : msg.frames()) {
             if (!write(frame.toBytes())) {
                 return false;
@@ -517,7 +518,7 @@ public class TcpClient {
 
     private boolean write(final byte[] data) {
         try {
-            Log.d(LOG_TAG, "send:" + bytesToHexString(data));
+            Log.i(LOG_TAG, "send:" + bytesToHexString(data));
             mSocket.write(new ByteBufferList(data));
             lastActive = new Date().getTime();
             return true;

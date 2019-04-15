@@ -1,6 +1,7 @@
 package yction.com.vsicscomm;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,6 @@ import yction.com.vsicscomm.protocol.AcrCode;
 import yction.com.vsicscomm.protocol.p808.CmdResp;
 import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.protocol.p808.Protocol;
-import yction.com.vsicscomm.utils.Log;
 
 
 public class ClientListener implements TcpClientListener {

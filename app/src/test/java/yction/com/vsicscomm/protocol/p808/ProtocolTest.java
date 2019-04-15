@@ -1,5 +1,7 @@
 package yction.com.vsicscomm.protocol.p808;
 
+import com.koushikdutta.async.Util;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -72,6 +74,14 @@ public class ProtocolTest {
         byte[] ts=Protocol.date2Bcd(date);
         System.out.println(Utils.bytesToHexString(ts));
 
+    }
+
+    @Test
+    public void paramQuery(){
+        String s="7e810600140133000000010002010000ff005c7e";
+        byte[] data= Utils.hexStringToByteArray(s);
+        MsgFrame frame=MsgFrame.fromBytes(data);
+        System.out.println(new Msg(frame,false));
     }
 
 }

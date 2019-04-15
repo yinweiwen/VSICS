@@ -1,5 +1,7 @@
 package yction.com.vsicscomm;
 
+import android.util.Log;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -8,7 +10,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import yction.com.vsicscomm.protocol.p808.Msg;
-import yction.com.vsicscomm.utils.Log;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +19,6 @@ public class TcpClientTest {
 
     @Before
     public void setup() throws IOException {
-        Log.UseInnerAndroidLog = false;
 
         ClientListener cl = new ClientListener();
         _client = new TcpClient(cl);

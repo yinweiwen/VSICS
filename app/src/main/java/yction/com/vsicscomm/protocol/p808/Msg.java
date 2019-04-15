@@ -1,6 +1,7 @@
 package yction.com.vsicscomm.protocol.p808;
 
 import android.annotation.SuppressLint;
+
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 import yction.com.vsicscomm.utils.Utils;
 
@@ -125,9 +126,10 @@ public class Msg {
     @Override
     public String toString() {
         try {
-            return String.format("D:%s MID:%s MN:%s", direction ? "up" : "down",
+            return String.format("D:%s MID:%s MN:%s %s", direction ? "up" : "down",
                     Utils.int2HexString(msgId()),
-                    Utils.int2HexString(msgNo()));
+                    Utils.int2HexString(msgNo()),
+                    Utils.bytesToHexString(body()));
         } catch (Exception ex) {
             return "NA";
         }

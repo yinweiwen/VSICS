@@ -40,7 +40,7 @@ public class Head {
         ByteBufferUnsigned bbu = new ByteBufferUnsigned(buff);
         msgId = bbu.getUnsignedShort();
         property = new Property(new byte[]{bbu.raw().get(), bbu.raw().get()});
-        byte[] tmp = new byte[12];
+        byte[] tmp = new byte[6];
         bbu.raw().get(tmp);
         String temp = bcd2Str(tmp);
         phone = temp.substring(0, 1).equalsIgnoreCase("0") ?
