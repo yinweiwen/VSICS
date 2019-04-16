@@ -31,4 +31,9 @@ public class FileUpload {
         bb.raw().get(fu.alarmNumber);
         return fu;
     }
+
+    @Override
+    public String toString() {
+        return String.format("ip:%s,tcp:%d,udp:%d", ip, tcpPort, udpPort);
+    }
 }

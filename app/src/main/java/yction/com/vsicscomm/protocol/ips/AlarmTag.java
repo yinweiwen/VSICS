@@ -13,14 +13,14 @@ public class AlarmTag {
     // 7个字节，由大写字母和数字组成
     public byte[] terminalId = new byte[7];
     // YY-MM-DD-hh-mm-ss （GMT+8时间）
-    public Date date=new Date();
+    public Date date = new Date();
     // 同一时间点报警的序号，从0循环累加
     public byte num;
     // 附件数量
     public byte attachNum;
 
     public byte[] toBytes() {
-        ByteBuffer bb = ByteBuffer.allocate(15);
+        ByteBuffer bb = ByteBuffer.allocate(16);
         bb.put(terminalId);
         bb.put(Protocol.date2Bcd(date));
         bb.put(num);

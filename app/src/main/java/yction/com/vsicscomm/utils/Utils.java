@@ -64,9 +64,13 @@ public class Utils {
     }
 
     public static String int2HexString(int value) {
+        return int2HexString(value, "0x");
+    }
+
+    public static String int2HexString(int value, String perfix) {
         StringBuilder sb = new StringBuilder();
         String hex = Integer.toHexString(value);
-        sb.append("0x");
+        sb.append(perfix);
         if (hex.length() % 2 == 1) {
             sb.append('0');
         }
@@ -102,7 +106,7 @@ public class Utils {
                 (byte) (value & 0xff)};
     }
 
-    public static byte[] getBytes(String s){
+    public static byte[] getBytes(String s) {
         try {
             return s.getBytes("GBK");
         } catch (UnsupportedEncodingException e) {
@@ -111,7 +115,7 @@ public class Utils {
         }
     }
 
-    public static String getString(byte[] data){
+    public static String getString(byte[] data) {
         return new String(data, Charset.forName("GBK"));
     }
 

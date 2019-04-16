@@ -4,6 +4,7 @@ import yction.com.vsicscomm.TcpClient;
 
 /**
  * 请求命令构造基类
+ * 信令数据文件格式
  * <p>
  * 请求命令多数派生自此类
  * 1. 继承构造函数，构造函数参数包含此命令需要的参数，构造函数内生成消息体_body
@@ -16,8 +17,6 @@ public abstract class CmdReq {
 
     // 消息ID
     protected MID _mid;
-    // 消息部分
-    protected byte[] _body;
     // 生成的消息内容
     protected Msg _msg;
 
@@ -30,11 +29,13 @@ public abstract class CmdReq {
 
     public Msg msg() {
         if (_msg == null) {
-            MsgFrame[] mf = Protocol.encode(_mid.getCode(), _body);
+            MsgFrame[] mf = Protocol.encode(_mid.getCode(), toBytes());
             _msg = new Msg(mf);
         }
         return _msg;
     }
+
+    protected abstract byte[] toBytes();
 
     /**
      * 同步发送

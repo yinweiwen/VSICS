@@ -7,7 +7,7 @@ import yction.com.vsicscomm.protocol.AcrCode;
  */
 public abstract class CmdResp {
     // 消息ID
-    protected MID _mid;
+    public MID _mid;
 
     public CmdResp(MID m) {
         _mid = m;

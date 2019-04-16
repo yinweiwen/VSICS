@@ -28,6 +28,10 @@ public enum MID {
     C_Notify_Compress(0x0901, "数据压缩上报"),
     C_RSA(0x0A00, "终端 RSA 公钥"),
 
+    C_AlarmAttachmentInfo(0x1210,"报警附件信息上传"),
+    C_AlarmFileInfo(0x1211,"文件信息上传"),
+    C_AlarmFileUploadFinish(0x1212,"文件上传完成"),
+
     P_ACK(0x8001, "平台通用应答"),
     P_RESEND(0x8003, "补传分包请求"),
     P_ACK_Registry(0x8100, "终端注册应答"),
@@ -68,7 +72,8 @@ public enum MID {
     P_Passthrough(0x8900, "数据下行透传"),
     P_RSA(0x8A00, "平台 RSA 公钥"),
 
-    P_REQ_AlarmAttachUpload(0x9208,"报警附件上传");
+    P_REQ_AlarmAttachUpload(0x9208,"报警附件上传"),
+    P_ACK_AlarmFileUploadFinish(0x9212,"文件上传完成消息应答");
 
     private int code;
     private String name;

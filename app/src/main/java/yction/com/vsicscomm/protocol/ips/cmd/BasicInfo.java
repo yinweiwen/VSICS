@@ -19,6 +19,8 @@ public class BasicInfo extends CmdReq {
 
     PassthroughType type;
 
+    byte[] body;
+
     protected BasicInfo() {
         super(MID.C_Notify_Passthrough);
     }
@@ -42,8 +44,8 @@ public class BasicInfo extends CmdReq {
             bb.put(bts);
         }
         int len = bb.position();
-        bi._body = new byte[len];
-        System.arraycopy(bb.array(), 0, bi._body, 0, len);
+        bi.body = new byte[len];
+        System.arraycopy(bb.array(), 0, bi.body, 0, len);
         return bi;
     }
 
@@ -63,9 +65,14 @@ public class BasicInfo extends CmdReq {
             bb.put(bts);
         }
         int len = bb.position();
-        bi._body = new byte[len];
-        System.arraycopy(bb.array(), 0, bi._body, 0, len);
+        bi.body = new byte[len];
+        System.arraycopy(bb.array(), 0, bi.body, 0, len);
         return bi;
+    }
+
+    @Override
+    protected byte[] toBytes() {
+        return body;
     }
 
     @Override

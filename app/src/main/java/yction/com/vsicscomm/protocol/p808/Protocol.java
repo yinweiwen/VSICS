@@ -1,5 +1,6 @@
 package yction.com.vsicscomm.protocol.p808;
 
+import yction.com.vsicscomm.Global;
 import yction.com.vsicscomm.protocol.AcrCode;
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 
@@ -86,7 +87,7 @@ public class Protocol {
         List<byte[]> contents = wrap(data);
         int len = contents.size();
         boolean sp = len > 1;
-        int sn = serialNo();
+        int sn = Global.serialNo();
         int fi = 1;
         MsgFrame[] res = new MsgFrame[len];
         for (byte[] content : contents) {
@@ -151,21 +152,6 @@ public class Protocol {
             index++;
         }
         return res;
-    }
-
-    // 系统当前流水号
-    private static int SerialNumber = 0;
-
-    /**
-     * 自动生成流水号
-     *
-     * @return 流水号
-     */
-    private static synchronized int serialNo() {
-        int n = SerialNumber + 1;
-        if (n > 65535) n = 1;
-        SerialNumber = n;
-        return n;
     }
 
     /**

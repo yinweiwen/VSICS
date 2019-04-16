@@ -13,7 +13,7 @@ public class ReportComm {
     public double longitude;
 
     public int height;
-    public int speed;
+    public double speed;
     public int direction;
     public Date date = new Date();
 
@@ -24,7 +24,7 @@ public class ReportComm {
         bb.putUnsignedInt((long) (latitude * 1e6));
         bb.putUnsignedInt((long) (longitude * 1e6));
         bb.putUnsignedShort(height);
-        bb.putUnsignedShort(speed);
+        bb.putUnsignedShort((int) (speed * 10));
         bb.putUnsignedShort(direction);
         bb.raw().put(Protocol.date2Bcd(date));
         return bb.raw().array();

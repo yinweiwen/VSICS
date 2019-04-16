@@ -25,6 +25,11 @@ public class Hearbeat extends CmdReq {
     }
 
     @Override
+    protected byte[] toBytes() {
+        return new byte[0];
+    }
+
+    @Override
     protected void onMsg(Msg msg) {
 
     }

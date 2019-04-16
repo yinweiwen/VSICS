@@ -1,27 +1,30 @@
 package yction.com.vsicscomm.protocol.ips.cmd;
 
 import yction.com.vsicscomm.protocol.ips.FileUpload;
-import yction.com.vsicscomm.protocol.p808.CmdReq;
+import yction.com.vsicscomm.protocol.p808.CmdResp;
 import yction.com.vsicscomm.protocol.p808.MID;
 import yction.com.vsicscomm.protocol.p808.Msg;
 
 import java.text.ParseException;
 
 /**
- * Created by yww08 on 2019/4/11.
+ * 4.5 报警附件上传指令
+ * 消息ID：0x9208
  */
-public class AlarmAttachmentUploadReq extends CmdReq {
+public class AlarmAttachmentUploadReq extends CmdResp {
     public AlarmAttachmentUploadReq() {
         super(MID.P_REQ_AlarmAttachUpload);
     }
 
     @Override
-    protected void onMsg(Msg msg) {
+    public Msg onMsg(Msg msg) {
         try {
-            FileUpload fu=FileUpload.fromBytes(msg.body());
+            FileUpload fu = FileUpload.fromBytes(msg.body());
+            System.out.println(fu.toString());
             // todo handle upload request
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        return msg;
     }
 }

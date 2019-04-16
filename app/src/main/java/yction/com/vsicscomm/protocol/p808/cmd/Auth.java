@@ -14,9 +14,16 @@ import yction.com.vsicscomm.utils.Utils;
 public class Auth extends CmdReq {
     public AcrCode ack;
 
+    private String token;
+
     public Auth(String token) {
         super(MID.C_Auth);
-        _body = Utils.getBytes(token);
+        this.token = token;
+    }
+
+    @Override
+    protected byte[] toBytes() {
+        return Utils.getBytes(token);
     }
 
     @Override

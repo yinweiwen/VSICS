@@ -11,7 +11,11 @@ import yction.com.vsicscomm.protocol.p808.Msg;
 public class Logout extends CmdReq {
     public Logout() {
         super(MID.C_Logout);
-        _body = new byte[0];
+    }
+
+    @Override
+    protected byte[] toBytes() {
+        return new byte[0];
     }
 
     @Override

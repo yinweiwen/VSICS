@@ -72,12 +72,6 @@ public class NetService extends Service {
             report.send();
         } catch (Exception ex) {
             System.out.println("report failed, " + ex.getMessage());
-        } finally {
-            try {
-                Thread.sleep(10 * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 

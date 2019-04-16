@@ -7,6 +7,10 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import yction.com.vsicscomm.protocol.ips.AttachmentFileName;
+import yction.com.vsicscomm.protocol.ips.AttachmentType;
+import yction.com.vsicscomm.protocol.ips.ReportComm;
+import yction.com.vsicscomm.protocol.ips.cmd.Report;
 import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.protocol.p808.MsgFrame;
 
@@ -67,6 +71,15 @@ public class ExampleUnitTest {
 
     @Test
     public void testHashMap() {
+        Report report = new Report(new ReportComm(), null);
+        System.out.println(report.msg());
+
+        double a = 3.123;
+        System.out.println((long) (a * 1e3));
+
+        double s = 52.312;
+        System.out.println((int) (s * 10));
+
         Map<Integer, Object> map = new HashMap<>();
         map.put(1, "123");
         map.put(1, "234");
@@ -78,6 +91,13 @@ public class ExampleUnitTest {
         ByteBuffer bb = ByteBuffer.allocate(10);
         bb.putInt(1);
         System.out.println(bb.position());
+    }
+
+    @Test
+    public void testAttachmentFileName() {
+        System.out.println(AttachmentFileName.toFileName(AttachmentType.Picture,
+                0,
+                (byte) 0x64, (byte) 0x01, 1, "0102030123", "png"));
     }
 
     class Monitor {

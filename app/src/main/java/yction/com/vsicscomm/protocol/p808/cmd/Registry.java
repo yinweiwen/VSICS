@@ -25,6 +25,14 @@ public class Registry extends CmdReq {
 
     public Ack ack;
 
+    private int province;
+    private int city;
+    private byte[] manufacturerId;
+    private byte[] terminalModel;
+    private byte[] terminalId;
+    private byte licenseColor;
+    private String vehicleIdentification;
+
     /**
      * 终端注册命令构造函数
      *
@@ -40,6 +48,21 @@ public class Registry extends CmdReq {
                     byte[] terminalModel, byte[] terminalId,
                     byte licenseColor, String vehicleIdentification) {
         super(MID.C_Registry);
+        this.province = province;
+        this.city = city;
+        this.manufacturerId = manufacturerId;
+        this.terminalModel = terminalModel;
+        this.terminalId = terminalId;
+        this.licenseColor = licenseColor;
+        this.vehicleIdentification = vehicleIdentification;
+    }
+
+    public Registry() {
+        super(MID.C_Registry);
+    }
+
+    @Override
+    protected byte[] toBytes() {
         byte[] sbts = Utils.getBytes(vehicleIdentification);
         ByteBufferUnsigned bb = new ByteBufferUnsigned(37 + sbts.length);
         bb.putUnsignedShort(province);
@@ -49,11 +72,7 @@ public class Registry extends CmdReq {
         bb.raw().put(terminalId);
         bb.raw().put(licenseColor);
         bb.raw().put(sbts);
-        _body = bb.raw().array();
-    }
-
-    public Registry() {
-        super(MID.C_Registry);
+        return bb.raw().array();
     }
 
     @Override
