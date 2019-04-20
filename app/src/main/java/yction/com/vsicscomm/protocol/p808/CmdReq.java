@@ -1,6 +1,6 @@
 package yction.com.vsicscomm.protocol.p808;
 
-import yction.com.vsicscomm.TcpClient;
+import yction.com.vsicscomm.protocol.AcrCode;
 
 /**
  * 请求命令构造基类
@@ -11,9 +11,7 @@ import yction.com.vsicscomm.TcpClient;
  * 2. 继承onMsg处理；同步消息返回的内容在此方法中处理
  */
 public abstract class CmdReq {
-
-    // 终端TCP控制类(静态量,终端创建的时候指定)
-    public static TcpClient _client;
+    public AcrCode result = AcrCode.Error;
 
     // 消息ID
     protected MID _mid;
@@ -38,27 +36,16 @@ public abstract class CmdReq {
     protected abstract byte[] toBytes();
 
     /**
-     * 同步发送
-     */
-    public void send() {
-        Ack = _client.send(msg());
-        if (Ack != null)
-            onMsg(Ack);
-    }
-
-    /**
-     * 异步分送
-     *
-     * @return 发送是否成功
-     */
-    public boolean sendAsyn() {
-        return _client.sendAsync(msg());
-    }
-
-    /**
      * 返回消息处理函数
      *
      * @param msg 返回消息
      */
-    protected abstract void onMsg(Msg msg);
+    public void onMsg(Msg msg) {
+        try {
+            result = Protocol.checkCommAck(_msg, msg);
+            if (result == null) result = AcrCode.Error;
+        } catch (Exception ex) {
+            result = AcrCode.Error;
+        }
+    }
 }

@@ -13,7 +13,7 @@ public class FileUpload {
     public int tcpPort;
     public int udpPort;
     public AlarmTag alarmTag = new AlarmTag();
-    public byte[] alarmNumber;
+    public String alarmId;
 
     public static FileUpload fromBytes(byte[] data) throws ParseException {
         FileUpload fu = new FileUpload();
@@ -27,8 +27,9 @@ public class FileUpload {
         byte[] at = new byte[16];
         bb.raw().get(at);
         fu.alarmTag = AlarmTag.fromBytes(at);
-        fu.alarmNumber = new byte[32];
-        bb.raw().get(fu.alarmNumber);
+        byte[] abts = new byte[32];
+        bb.raw().get(abts);
+        fu.alarmId = Utils.getString(abts);
         return fu;
     }
 

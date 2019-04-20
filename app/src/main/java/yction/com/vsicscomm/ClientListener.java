@@ -25,12 +25,12 @@ public class ClientListener implements TcpClientListener {
     @SuppressLint("UseSparseArrays")
     private final Map<Integer, CmdResp> _cmds = new HashMap<>();
 
-    public ClientListener() {
+    public ClientListener(NetService service) {
         registry(new BasicInfoReq());
         registry(new ParamQueryReq());
         registry(new ParamQuerySpecialReq());
         registry(new ParamSetReq());
-        registry(new AlarmAttachmentUploadReq());
+        registry(new AlarmAttachmentUploadReq(service));
     }
 
     public void registry(CmdResp cmd) {

@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -109,6 +110,34 @@ public class Utils {
     public static byte[] getBytes(String s) {
         try {
             return s.getBytes("GBK");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
+
+    public static byte[] getBytes(String s, int len) {
+        return getBytes(s, len, "GBK");
+    }
+
+    /**
+     * 获取字符串字节
+     *
+     * @param s   字符串
+     * @param len 指定长度,不足长度补0
+     * @return 字节数组
+     */
+    public static byte[] getBytes(String s, int len, String charsetName) {
+        try {
+            byte[] bts = s.getBytes(charsetName);
+            if (bts.length > len) {
+                return sub(bts, 0, len - 1);
+            } else if (bts.length < len) {
+                ByteBuffer bb = ByteBuffer.allocate(len);
+                bb.put(bts);
+                return bb.array();
+            }
+            return bts;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return new byte[0];

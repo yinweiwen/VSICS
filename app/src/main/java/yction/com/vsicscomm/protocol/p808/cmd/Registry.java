@@ -27,9 +27,9 @@ public class Registry extends CmdReq {
 
     private int province;
     private int city;
-    private byte[] manufacturerId;
-    private byte[] terminalModel;
-    private byte[] terminalId;
+    private String manufacturerId;
+    private String terminalModel;
+    private String terminalId;
     private byte licenseColor;
     private String vehicleIdentification;
 
@@ -44,8 +44,8 @@ public class Registry extends CmdReq {
      * @param licenseColor          车牌颜色
      * @param vehicleIdentification 车辆标识
      */
-    public Registry(int province, int city, byte[] manufacturerId,
-                    byte[] terminalModel, byte[] terminalId,
+    public Registry(int province, int city, String manufacturerId,
+                    String terminalModel, String terminalId,
                     byte licenseColor, String vehicleIdentification) {
         super(MID.C_Registry);
         this.province = province;
@@ -67,9 +67,9 @@ public class Registry extends CmdReq {
         ByteBufferUnsigned bb = new ByteBufferUnsigned(37 + sbts.length);
         bb.putUnsignedShort(province);
         bb.putUnsignedShort(city);
-        bb.raw().put(manufacturerId);
-        bb.raw().put(terminalModel);
-        bb.raw().put(terminalId);
+        bb.raw().put(Utils.getBytes(manufacturerId,5));
+        bb.raw().put(Utils.getBytes(terminalModel,20));
+        bb.raw().put(Utils.getBytes(terminalId,7));
         bb.raw().put(licenseColor);
         bb.raw().put(sbts);
         return bb.raw().array();

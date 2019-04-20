@@ -11,8 +11,6 @@ import com.koushikdutta.async.callback.ConnectCallback;
 import com.koushikdutta.async.callback.DataCallback;
 import com.koushikdutta.async.future.Cancellable;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -34,7 +32,6 @@ import yction.com.vsicscomm.protocol.p808.Protocol;
 import yction.com.vsicscomm.protocol.p808.cmd.Auth;
 import yction.com.vsicscomm.protocol.p808.cmd.Hearbeat;
 import yction.com.vsicscomm.protocol.p808.cmd.Registry;
-import yction.com.vsicscomm.utils.Utils;
 
 import static yction.com.vsicscomm.utils.Utils.bytesToHexString;
 
@@ -55,7 +52,7 @@ import static yction.com.vsicscomm.utils.Utils.bytesToHexString;
 public class TcpClient {
 
     private final static String LOG_TAG = "TCP_CLIENT";
-    private WeakReference<TcpClientListener> mListener;
+    private TcpClientListener mListener;
     private AsyncSocket mSocket;
 
     private static final int mHeartbeatInterval = 30 * 1000;
@@ -67,6 +64,9 @@ public class TcpClient {
     private static final int mSendBlock = 2048;
     private static final int mSendAsyncInterval = 1000;
 
+    // 不进行请求响应应答的消息序号检查
+    private boolean withoutAckMsgNoCheck = false;
+
     // 终端上线(建立连接/鉴权成功)
     private boolean mIsOnline = false;
     private boolean mIsConnecting = false;
@@ -77,13 +77,7 @@ public class TcpClient {
     private String host;
     private Integer port;
     // 注册参数
-    public int province;
-    public int city;
-    public byte[] manufacturerId;
-    public byte[] terminalModel;
-    public byte[] terminalId;
-    public byte licenseColor;
-    public String vehicleIdentification;
+    private Registry registry;
     // ***************
 
     private boolean isStarted;
@@ -102,9 +96,8 @@ public class TcpClient {
 
     private MsgBuffer _buffer = new MsgBuffer();
 
-    public TcpClient(TcpClientListener listener) throws IOException {
-        mListener = new WeakReference<>(listener);
-        CmdReq._client = this;
+    public TcpClient(TcpClientListener listener) {
+        mListener = listener;
     }
 
     public boolean getStatus() {
@@ -120,12 +113,30 @@ public class TcpClient {
         }
     }
 
+    public void setWithoutAckMsgNoCheck(boolean flag) {
+        withoutAckMsgNoCheck = flag;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
+
     public void shutdown() {
         try {
             isShutdown = true;
             mSocket.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean connect() {
+        try {
+            if (mIsOnline) return true;
+            connecting();
+            return mIsOnline;
+        } catch (Exception e) {
+            return false;
         }
     }
 
@@ -139,21 +150,7 @@ public class TcpClient {
                             try {
                                 if (isShutdown) break;
                                 if (!mIsOnline) {
-                                    synchronized (connectMonitor) {
-                                        mIsConnecting = true;
-                                        connect(host, port);
-                                        Log.d(LOG_TAG, String.format("connecting %s:%d...", host, port));
-                                        connectMonitor.wait(mConnectTimeout);
-                                        if (mIsConnecting && cancellable != null) {
-                                            cancellable.cancel();
-                                        }
-                                        Log.d(LOG_TAG, "connect " + (mIsOnline ? "success" : "failed"));
-                                        if (!mIsOnline) {
-                                            ResetConnection();
-                                            Thread.sleep(mConnectErr.sleepPolicy());
-                                            mConnectErr = ConnectErr.None;
-                                        }
-                                    }
+                                    connecting();
                                 } else {
                                     if (!mSocket.isOpen())
                                         throw new Exception("error connection");
@@ -184,6 +181,27 @@ public class TcpClient {
         isStarted = true;
     }
 
+    /**
+     * 同步连接函数
+     */
+    private void connecting() throws UnknownHostException, InterruptedException {
+        synchronized (connectMonitor) {
+            mIsConnecting = true;
+            connect(host, port);
+            Log.d(LOG_TAG, String.format("connecting %s:%d...", host, port));
+            connectMonitor.wait(mConnectTimeout);
+            if (mIsConnecting && cancellable != null) {
+                cancellable.cancel();
+            }
+            Log.d(LOG_TAG, "connect " + (mIsOnline ? "success" : "failed"));
+            if (!mIsOnline) {
+                ResetConnection();
+                Thread.sleep(mConnectErr.sleepPolicy());
+                mConnectErr = ConnectErr.None;
+            }
+        }
+    }
+
     private void connect(final String host, final Integer port) throws UnknownHostException {
         final InetSocketAddress socketAddress;
         if (host != null) {
@@ -202,7 +220,8 @@ public class TcpClient {
                             public void onCompleted(Exception ex) {
                                 Log.i(LOG_TAG, "socket close");
                                 mIsOnline = false;
-                                mListener.get().onClose(ex == null ? null : ex.getMessage());
+                                if (mListener != null)
+                                    mListener.onClose(ex == null ? null : ex.getMessage());
                             }
                         });
 
@@ -210,7 +229,9 @@ public class TcpClient {
                             @Override
                             public void onCompleted(Exception ex) {
                                 Log.i(LOG_TAG, "socket end");
-                                mListener.get().onError(ex == null ? null : ex.getMessage());
+                                mIsOnline = false;
+                                if (mListener != null)
+                                    mListener.onError(ex == null ? null : ex.getMessage());
                                 socket.close();
                             }
                         });
@@ -256,10 +277,11 @@ public class TcpClient {
             public void run() {
                 if (login()) {
                     mIsOnline = true;
-                    mListener.get().onConnection();
+                    if (mListener != null)
+                        mListener.onConnection();
                 }
                 synchronized (connectMonitor) {
-                    mConnectErr = ConnectErr.Refuse;
+                    mConnectErr = ConnectErr.None;
                     mIsConnecting = false;
                     connectMonitor.notify();
                 }
@@ -276,7 +298,10 @@ public class TcpClient {
         try {
             Log.i(LOG_TAG, "on msg:" + msg.toString());
             if (!msg.isReady()) { // 分包应答
-                Msg ack = mListener.get().onSeperatePackage(msg);
+
+                Msg ack = mListener != null ?
+                        mListener.onSeperatePackage(msg) :
+                        Protocol.commAck(msg, AcrCode.Success);
                 if (ack != null) {
                     sendAck(ack);
                 }
@@ -286,7 +311,9 @@ public class TcpClient {
                 return;
             }
 
-            Msg ack = mListener.get().onMsg(msg);
+            Msg ack = mListener != null ?
+                    mListener.onMsg(msg) :
+                    Protocol.commAck(msg, AcrCode.Success);
             if (ack != null) {
                 sendAck(ack);
             }
@@ -302,20 +329,21 @@ public class TcpClient {
      * @return 成功/失败
      */
     private boolean login() {
-        Registry registry = new Registry(province, city, manufacturerId,
-                terminalId, terminalModel, licenseColor, vehicleIdentification);
+        // 未定义注册消息时不使用注册和鉴权
+        if (registry == null) return true;
         Log.i(LOG_TAG, "发送注册命令");
-        registry.send();
+        registry.ack = null;
+        send(registry);
         if (registry.ack != null) {
             if (registry.ack.result == Registry.Result.OK ||
                     registry.ack.result == Registry.Result.VehicleRegisted ||
                     registry.ack.result == Registry.Result.TerminalRegisted) {
                 Auth auth = new Auth(registry.ack.AuthToken);
-                auth.send();
-                if (auth.ack == AcrCode.Success) {
+                send(auth);
+                if (auth.result == AcrCode.Success) {
                     return true;
                 } else {
-                    Log.w(LOG_TAG, "终端登录失败:" + auth.ack.getDesc());
+                    Log.w(LOG_TAG, "终端登录失败:" + auth.result.getDesc());
                     return false;
                 }
             } else {
@@ -330,7 +358,34 @@ public class TcpClient {
      * 心跳
      */
     private void heartbeat() {
-        new Hearbeat().sendAsyn();
+        sendAsync(new Hearbeat());
+    }
+
+    /**
+     * 异步发送请求
+     *
+     * @param req 请求
+     */
+    public void sendAsync(CmdReq req) {
+        sendAsync(req.msg());
+    }
+
+    /**
+     * 同步发送请求
+     *
+     * @param req 请求
+     */
+    public Errors send(CmdReq req) {
+        AckRes ar = new AckRes(Errors.Default);
+        Msg ack = send(req.msg(), ar);
+        if (ack != null) {
+            try {
+                req.onMsg(ack);
+            } catch (Exception ex) {
+                Log.w(LOG_TAG, "同步请求返回消息处理失败:" + ex);
+            }
+        }
+        return ar.error;
     }
 
     /**
@@ -339,11 +394,12 @@ public class TcpClient {
      * @param msg 发送的命令请求
      * @return 返回的消息; 发送失败时返回空
      */
-    public Msg send(final Msg msg) {
+    public Msg send(Msg msg, AckRes ackRes) {
         Log.i(LOG_TAG, "send:" + msg.toString());
         Msg res = null;
         for (int i = 0; i < msg.frames().length; i++) {
             AckRes ar = writeSync(msg.frames()[i]);
+            ackRes.error = ar.error;
             if (ar.error != Errors.Success) {
                 Log.w(LOG_TAG, "同步发送错误:" + ar.error.getDesc());
                 break;
@@ -474,7 +530,7 @@ public class TcpClient {
                 public boolean onData(Msg m) {
                     synchronized (monitor) {
                         // 应答消息体中第一个WORD字符是请求消息的流水号
-                        if (m.readAckMsgNo() == mSyncMN) {
+                        if (withoutAckMsgNoCheck || m.readAckMsgNo() == mSyncMN) {
                             recMsg[0] = m;
                             monitor.flag = true;
                             monitor.notifyAll();
@@ -516,7 +572,7 @@ public class TcpClient {
         boolean flag;
     }
 
-    private boolean write(final byte[] data) {
+    public boolean write(final byte[] data) {
         try {
             Log.i(LOG_TAG, "send:" + bytesToHexString(data));
             mSocket.write(new ByteBufferList(data));
@@ -533,6 +589,7 @@ public class TcpClient {
         try {
             if (mSocket != null && mSocket.isOpen()) {
                 mSocket.close();
+                mIsOnline = false;
                 mSocket = null;
             }
         } catch (Exception ex) {

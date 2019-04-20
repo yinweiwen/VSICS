@@ -11,8 +11,6 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import yction.com.vsicscomm.utils.Log;
-
 import static org.junit.Assert.*;
 
 /**
@@ -34,19 +32,18 @@ public class ExampleInstrumentedTest {
 
     @Before
     public void setup() throws IOException {
-        Log.UseInnerAndroidLog = false;
 
-        ClientListener cl = new ClientListener();
+        ClientListener cl = new ClientListener(null);
         _client = new TcpClient(cl);
         _client.setHost("59.36.96.75", 10001);
 //        _client.setHost("192.168.0.106", 9001);
-        _client.province = 1;
-        _client.city = 1;
-        _client.manufacturerId = new byte[5];
-        _client.terminalModel = new byte[20];
-        _client.terminalId = new byte[7];
-        _client.licenseColor = 0x01;
-        _client.vehicleIdentification = "粤S80999";
+//        _client.province = 1;
+//        _client.city = 1;
+//        _client.manufacturerId = new byte[5];
+//        _client.terminalModel = new byte[20];
+//        _client.terminalId = new byte[7];
+//        _client.licenseColor = 0x01;
+//        _client.vehicleIdentification = "粤S80999";
         _client.start();
     }
 

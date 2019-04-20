@@ -9,13 +9,18 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.Date;
 
+import yction.com.vsicscomm.protocol.Errors;
 import yction.com.vsicscomm.protocol.ips.AlarmADAS;
+import yction.com.vsicscomm.protocol.ips.AlarmDSM;
+import yction.com.vsicscomm.protocol.ips.AlarmTag;
 import yction.com.vsicscomm.protocol.ips.ReportComm;
 import yction.com.vsicscomm.protocol.ips.cmd.Report;
+import yction.com.vsicscomm.protocol.p808.cmd.Registry;
 
 public class NetService extends Service {
     private static final String TAG = "NetService";
     private TcpClient _client;
+    private FileService _fileService;
 
     @Nullable
     @Override
@@ -27,52 +32,65 @@ public class NetService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        String host = "59.36.96.75";
-        int port = 10001;
+        // 启动文件上传服务
+        _fileService = new FileService(this);
+        _fileService.start();
 
-        ClientListener cl = new ClientListener();
+
+        ClientListener cl = new ClientListener(this);
         try {
             _client = new TcpClient(cl);
-            _client.setHost(host, port);
-//            _client.setHost("192.168.0.106", 9001);
-            _client.province = 0;
-            _client.city = 0;
-            _client.manufacturerId = new byte[5];
-            _client.terminalModel = new byte[20];
-            _client.terminalId = new byte[]{0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x32};
-            _client.licenseColor = 0x01;
-            _client.vehicleIdentification = "粤S80997";
+            _client.setHost(Global.host, Global.port);
+
+            Registry registry = new Registry(0, 0, "",
+                    "", Global.terminalId, (byte) 0, Global.vehicleIdentification);
+            _client.setRegistry(registry);
+
             _client.start();
+
             Log.i(TAG, "创建TcpClient成功!");
 
-        } catch (IOException e) {
-            Log.e(TAG, "创建TcpClient错误!" + e.getMessage());
         } catch (NumberFormatException e) {
-            Log.e(TAG, "服务器地址填写错误!" + host);
+            Log.e(TAG, "服务器地址填写错误!" + Global.host);
         } catch (Exception e) {
-            Log.e(TAG, "服务器地址填写错误!" + host);
+            Log.e(TAG, "服务器地址填写错误!" + Global.host);
         }
     }
 
-    public void reportADAS(){
+    public void reportADAS() {
         try {
             System.out.println("report ...");
             ReportComm comm = new ReportComm();
-            comm.alarmTag = 0;
-            comm.stateTag = 0;
-            comm.latitude = 32.1314312971;
-            comm.longitude = 119.5449829102;
-            comm.height = 12;
-            comm.speed = 60;
-            comm.direction = 30;
+            comm.alarmTag = 0x80000;
+            comm.stateTag = 0xC0003;
+            comm.latitude = 32.1511992097;
+            comm.longitude = 119.5596599579;
+            comm.height = 6;
+            comm.speed = 60.0;
+            comm.direction = 0;
             comm.date = new Date();
-            AlarmADAS adas = new AlarmADAS();
-            adas.报警ID = 0;
-            Report report = new Report(comm, adas);
-            report.send();
+            AlarmDSM dsm = new AlarmDSM();
+            dsm.报警事件类型 = 0x01;
+            dsm.报警级别 = 0x02;
+            dsm.疲劳程度 = 5;
+            dsm.车速 = 30;
+            dsm.高程 = 5;
+            dsm.纬度 = 32.1511992097;
+            dsm.经度 = 119.5596599579;
+            dsm.日期时间 = new Date();
+            dsm.报警标识号 = new AlarmTag();
+            dsm.报警标识号.terminalId = Global.terminalId;
+            dsm.报警标识号.attachNum = 2;
+            Report report = new Report(comm, dsm);
+            Errors err = _client.send(report);
+            System.out.println(err);
         } catch (Exception ex) {
             System.out.println("report failed, " + ex.getMessage());
         }
+    }
+
+    public FileService getFileService() {
+        return _fileService;
     }
 
     private NetBinder binder = new NetBinder();

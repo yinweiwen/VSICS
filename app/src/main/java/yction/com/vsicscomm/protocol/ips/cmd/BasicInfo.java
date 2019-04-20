@@ -75,11 +75,6 @@ public class BasicInfo extends CmdReq {
         return body;
     }
 
-    @Override
-    protected void onMsg(Msg msg) {
-
-    }
-
     /**
      * 外设状态信息
      */

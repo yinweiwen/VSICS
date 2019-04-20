@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Objects;
 
+import yction.com.vsicscomm.Global;
 import yction.com.vsicscomm.utils.Utils;
 
 import static org.junit.Assert.*;
@@ -25,9 +26,9 @@ public class MsgFrameTest {
         Head hd = frame.getHead();
         assert (hd.msgId == MID.C_Ack.getCode());
         assert (hd.msgNo == 1);
-        assert (Objects.equals(hd.phone, Protocol.phone));
+        assert (Objects.equals(hd.phone, Global.phone));
         assert (!hd.property.SP);
-        assert (hd.property.encrypt == Protocol.encrypt);
+        assert (hd.property.encrypt == Global.encrypt);
         assert (hd.property.size == 5);
         System.out.println(Utils.bytesToHexString(frame.getBody()));
     }

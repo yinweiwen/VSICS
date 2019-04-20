@@ -12,7 +12,6 @@ import yction.com.vsicscomm.utils.Utils;
  * 消息ID：0x0102。
  */
 public class Auth extends CmdReq {
-    public AcrCode ack;
 
     private String token;
 
@@ -24,11 +23,5 @@ public class Auth extends CmdReq {
     @Override
     protected byte[] toBytes() {
         return Utils.getBytes(token);
-    }
-
-    @Override
-    public void onMsg(Msg msg) {
-        ack = Protocol.checkCommAck(_msg, msg);
-        if (ack == null) ack = AcrCode.Error;
     }
 }

@@ -1,0 +1,58 @@
+package yction.com.vsicscomm.protocol.ips.cmd;
+
+import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
+import yction.com.vsicscomm.protocol.ips.AttachmentType;
+import yction.com.vsicscomm.protocol.ips.upload.FileFinishAck;
+import yction.com.vsicscomm.protocol.ips.upload.FileFinishAckItem;
+import yction.com.vsicscomm.protocol.p808.CmdReq;
+import yction.com.vsicscomm.protocol.p808.MID;
+import yction.com.vsicscomm.protocol.p808.Msg;
+import yction.com.vsicscomm.utils.Utils;
+
+public class FileFinish extends CmdReq {
+
+    public String fileName;
+    public AttachmentType at;
+    public long fileSize;
+
+    public FileFinishAck ack;
+
+    public FileFinish() {
+        super(MID.C_AlarmFileUploadFinish);
+    }
+
+    @Override
+    protected byte[] toBytes() {
+        byte[] fnbs = Utils.getBytes(fileName);
+        ByteBufferUnsigned bb = new ByteBufferUnsigned(6 + fnbs.length);
+        bb.raw().put((byte) fnbs.length);
+        bb.raw().put(fnbs);
+        bb.raw().put(at.state);
+        bb.putUnsignedInt(fileSize);
+        return bb.raw().array();
+    }
+
+    @Override
+    public void onMsg(Msg msg) {
+        if (msg.msgId() == MID.P_ACK_AlarmFileUploadFinish.getCode()) {
+            ack = new FileFinishAck();
+            ByteBufferUnsigned bb = new ByteBufferUnsigned(msg.body());
+            byte fileNameLen = bb.raw().get();
+            byte[] fileNameBts = new byte[fileNameLen];
+            bb.raw().get(fileNameBts);
+            byte fileType = bb.raw().get();
+            ack.result = bb.raw().get();
+            if (ack.result == 0x01) {
+                byte reUploadCnt = bb.raw().get();
+                ack.reUploads = new FileFinishAckItem[reUploadCnt];
+                for (int i = 0; i < reUploadCnt; i++) {
+                    ack.reUploads[i].offset = bb.getUnsignedInt();
+                    ack.reUploads[i].size = bb.getUnsignedInt();
+                }
+            }
+        } else {
+            ack = new FileFinishAck();
+            ack.result = 0x02;
+        }
+    }
+}

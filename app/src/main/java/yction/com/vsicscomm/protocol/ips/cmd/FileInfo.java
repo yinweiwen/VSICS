@@ -18,6 +18,9 @@ public class FileInfo extends CmdReq {
     public AttachmentType at;
     public long fileSize;
 
+    public String filePath;
+    public int fileId;
+
     public FileInfo() {
         super(MID.C_AlarmFileInfo);
     }
@@ -32,10 +35,5 @@ public class FileInfo extends CmdReq {
         bb.raw().put(at.state);
         bb.putUnsignedInt(fileSize);
         return bb.raw().array();
-    }
-
-    @Override
-    protected void onMsg(Msg msg) {
-
     }
 }

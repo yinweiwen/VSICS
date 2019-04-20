@@ -1,15 +1,18 @@
 package yction.com.vsicscomm.protocol.ips.cmd;
 
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.util.Date;
 
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
+import yction.com.vsicscomm.protocol.ips.AlarmDSM;
 import yction.com.vsicscomm.protocol.ips.ReportComm;
 import yction.com.vsicscomm.protocol.ips.ReportExtra;
 import yction.com.vsicscomm.protocol.p808.CmdReq;
 import yction.com.vsicscomm.protocol.p808.MID;
 import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.protocol.p808.Protocol;
+import yction.com.vsicscomm.utils.Utils;
 
 /**
  * 位置信息汇报
@@ -26,6 +29,24 @@ public class Report extends CmdReq {
         this.extra = extra;
     }
 
+    public Report() {
+        super(MID.C_Notify_Location);
+    }
+
+    public static Report fromBytes(byte[] data) throws ParseException {
+        byte[] cbts = Utils.sub(data, 0, 27);
+        Report report = new Report();
+        report.comm = ReportComm.fromBytes(cbts);
+        if (data.length > 28) {
+            if (data[28] == 0x65) {
+                int len = data[29];
+                byte[] dsmBts = Utils.sub(data, 30, 30 + len - 1);
+                report.extra = AlarmDSM.fromBytes(dsmBts);
+            }
+        }
+        return report;
+    }
+
     @Override
     protected byte[] toBytes() {
         int len;
@@ -34,7 +55,7 @@ public class Report extends CmdReq {
         len = a.length;
         if (extra != null) {
             b = extra.getBytes();
-            len += b.length;
+            len += b.length + 2;
         }
         ByteBuffer bb = ByteBuffer.allocate(len);
         bb.put(a);
@@ -44,10 +65,5 @@ public class Report extends CmdReq {
             bb.put(b);
         }
         return bb.array();
-    }
-
-    @Override
-    protected void onMsg(Msg msg) {
-
     }
 }

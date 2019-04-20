@@ -11,6 +11,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static yction.com.vsicscomm.Global.FRAME_SIZE;
+import static yction.com.vsicscomm.Global.encrypt;
+import static yction.com.vsicscomm.Global.phone;
+
 /*
 1. 数据类型:
     BYTE - 8 字节
@@ -55,15 +59,6 @@ public class Protocol {
 
     // 协议最小长度
     public static final int LEAST_LENGTH = 15;
-
-    // 分包大小
-    private static final int FRAME_SIZE = 4096;
-
-    // 数据加密方式
-    public static int encrypt = 0;
-
-    // 终端手机号码
-    public static String phone = "13300000001";
 
     /**
      * 心跳包构造
