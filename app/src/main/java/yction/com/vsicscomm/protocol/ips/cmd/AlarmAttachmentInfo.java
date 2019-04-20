@@ -5,22 +5,28 @@ import android.annotation.SuppressLint;
 import java.nio.ByteBuffer;
 
 import yction.com.vsicscomm.Global;
-import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 import yction.com.vsicscomm.protocol.ips.AlarmTag;
 import yction.com.vsicscomm.protocol.ips.AttachmentInfo;
 import yction.com.vsicscomm.protocol.p808.CmdReq;
 import yction.com.vsicscomm.protocol.p808.MID;
-import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.utils.Utils;
 
+/**
+ * 报警附件信息消息
+ * 消息ID：0x1210。
+ * 报文类型：信令数据报文。
+ */
 public class AlarmAttachmentInfo extends CmdReq {
-
+    // 终端ID
     public String terminalId = Global.terminalId;
+    // 报警标识号
     public AlarmTag alarmTag = new AlarmTag();
     public String alarmId = "";
     // 0x00：正常报警文件信息 0x01：补传报警文件信息
     public byte infoType;
+    // 附件数量
     public byte attachNum;
+    // 附件信息列表
     public AttachmentInfo[] attachmentInfos = new AttachmentInfo[0];
 
     public AlarmAttachmentInfo() {

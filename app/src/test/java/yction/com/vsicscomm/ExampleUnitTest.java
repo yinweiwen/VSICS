@@ -1,23 +1,30 @@
 package yction.com.vsicscomm;
 
+import android.util.ArraySet;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 import yction.com.vsicscomm.protocol.ips.AlarmADAS;
+import yction.com.vsicscomm.protocol.ips.AlarmTagState;
 import yction.com.vsicscomm.protocol.ips.AttachmentFileName;
 import yction.com.vsicscomm.protocol.ips.AttachmentInfo;
 import yction.com.vsicscomm.protocol.ips.AttachmentType;
 import yction.com.vsicscomm.protocol.ips.ReportComm;
+import yction.com.vsicscomm.protocol.ips.StateTagState;
 import yction.com.vsicscomm.protocol.ips.cmd.AlarmAttachmentInfo;
 import yction.com.vsicscomm.protocol.ips.cmd.FileInfo;
 import yction.com.vsicscomm.protocol.ips.cmd.Report;
@@ -224,6 +231,39 @@ public class ExampleUnitTest {
                 ack.reUploads[i].size = bb.getUnsignedInt();
             }
         }
+    }
+
+    @Test
+    public void testAlarmTagState() {
+        long state = 0x80000;
+        EnumSet<AlarmTagState> as = AlarmTagState.getStatusFlags(state);
+        for (AlarmTagState a : as) {
+            System.out.println(a);
+        }
+
+        Set<AlarmTagState> ss = new LinkedHashSet<>();
+        ss.add(AlarmTagState.OvertimeStop);
+        System.out.println(Long.toHexString(AlarmTagState.getStatusValue(ss)));
+    }
+
+    @Test
+    public void testStateTagState() {
+        long state = 0xC0003;
+        EnumSet<StateTagState> as = StateTagState.getStatusFlags(state);
+        for (StateTagState a : as) {
+            System.out.println(a);
+        }
+
+        Set<StateTagState> ss = new LinkedHashSet<>();
+        ss.add(StateTagState.Circuit);
+        System.out.println(Long.toHexString(StateTagState.getStatusValue(ss)));
+
+        System.out.println(Long.toHexString(StateTagState.status(
+                StateTagState.ACC,
+                StateTagState.Location,
+                StateTagState.GPS,
+                StateTagState.Beidou
+        )));
     }
 
     class Monitor {

@@ -13,9 +13,11 @@ import yction.com.vsicscomm.utils.Utils;
  * 报文类型：信令数据报文
  */
 public class FileInfo extends CmdReq {
-
+    // 文件名称
     public String fileName;
+    // 文件类型
     public AttachmentType at;
+    // 文件大小
     public long fileSize;
 
     public String filePath;

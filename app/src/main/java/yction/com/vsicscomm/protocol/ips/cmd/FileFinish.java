@@ -9,12 +9,21 @@ import yction.com.vsicscomm.protocol.p808.MID;
 import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.utils.Utils;
 
+/**
+ * 文件上传完成消息
+ * 消息ID：0x1212。
+ * 报文类型：信令数据报文
+ */
 public class FileFinish extends CmdReq {
 
+    // 文件名称
     public String fileName;
+    // 文件类型
     public AttachmentType at;
+    // 文件大小
     public long fileSize;
 
+    // 应答解析
     public FileFinishAck ack;
 
     public FileFinish() {

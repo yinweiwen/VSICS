@@ -1,5 +1,8 @@
 package yction.com.vsicscomm.protocol.ips;
 
+/**
+ * 附件文件类型
+ */
 public enum AttachmentType {
     Picture(0, "00", "图片"),
     Audio(1, "01", "音频"),

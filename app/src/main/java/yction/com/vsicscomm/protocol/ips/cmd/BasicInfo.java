@@ -5,11 +5,10 @@ import java.util.Map;
 
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 import yction.com.vsicscomm.protocol.ips.PassthroughType;
-import yction.com.vsicscomm.protocol.ips.PeripheralId;
+import yction.com.vsicscomm.protocol.ips.DeviceId;
 import yction.com.vsicscomm.protocol.ips.PeripheralState;
 import yction.com.vsicscomm.protocol.p808.CmdReq;
 import yction.com.vsicscomm.protocol.p808.MID;
-import yction.com.vsicscomm.protocol.p808.Msg;
 
 /**
  * 上传基本信息
@@ -30,14 +29,14 @@ public class BasicInfo extends CmdReq {
      *
      * @param states 外设状态
      */
-    public static BasicInfo fromStates(Map<PeripheralId, State> states) {
+    public static BasicInfo fromStates(Map<DeviceId, State> states) {
         BasicInfo bi = new BasicInfo();
         bi.type = PassthroughType.State;
 
         ByteBuffer bb = ByteBuffer.allocate(40960);
         bb.put((byte) bi.type.getState());
         bb.put((byte) states.size());
-        for (PeripheralId pid : states.keySet()) {
+        for (DeviceId pid : states.keySet()) {
             bb.put((byte) pid.getState());
             byte[] bts = states.get(pid).toBytes();
             bb.put((byte) bts.length);
@@ -52,13 +51,13 @@ public class BasicInfo extends CmdReq {
     /**
      * 信息查询命令构造
      */
-    public static BasicInfo fromInfos(Map<PeripheralId, Info> infos) {
+    public static BasicInfo fromInfos(Map<DeviceId, Info> infos) {
         BasicInfo bi = new BasicInfo();
         bi.type = PassthroughType.Info;
         ByteBuffer bb = ByteBuffer.allocate(40960);
         bb.put((byte) bi.type.getState());
         bb.put((byte) infos.size());
-        for (PeripheralId pid : infos.keySet()) {
+        for (DeviceId pid : infos.keySet()) {
             bb.put((byte) pid.getState());
             byte[] bts = infos.get(pid).toBytes();
             bb.put((byte) bts.length);

@@ -10,14 +10,14 @@ public class Global {
     // 数据加密方式
     public static int encrypt = 0;
 
-    // 终端手机号码
-    public static String phone = "10059107644";
-
     // 平台地址
     public static String host = "59.36.96.75";
 
     // 平台端口
     public static int port = 10001;
+
+    // 终端手机号码
+    public static String phone = "10059107644";
 
     // 终端ID
     public static String terminalId = "0000000";
@@ -41,8 +41,6 @@ public class Global {
         return n;
     }
 
-    private static long AlarmIdNumber = 0;
-
     /**
      * 自动生成告警ID
      *
@@ -50,6 +48,5 @@ public class Global {
      */
     public static synchronized long alarmNo() {
         return new Date().getTime();
-//        return ++AlarmIdNumber;
     }
 }

@@ -3,7 +3,7 @@ package yction.com.vsicscomm.protocol.ips;
 /**
  * 外设ID
  */
-public enum PeripheralId {
+public enum DeviceId {
 
     ADAS(0x64, "高级驾驶辅助系统"),
     DSM(0x65, "驾驶员状态监控系统"),
@@ -21,13 +21,13 @@ public enum PeripheralId {
     private short state;
     private String desc;
 
-    PeripheralId(int s, String d) {
+    DeviceId(int s, String d) {
         state = (short) s;
         desc = d;
     }
 
-    public static PeripheralId valueOf(int code) {
-        for (PeripheralId x : PeripheralId.values()) {
+    public static DeviceId valueOf(int code) {
+        for (DeviceId x : DeviceId.values()) {
             if (x.state == code)
                 return x;
         }
