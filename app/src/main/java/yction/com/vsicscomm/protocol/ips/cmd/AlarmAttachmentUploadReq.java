@@ -2,19 +2,11 @@ package yction.com.vsicscomm.protocol.ips.cmd;
 
 import android.annotation.SuppressLint;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 
 import yction.com.vsicscomm.NetService;
-import yction.com.vsicscomm.R;
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 import yction.com.vsicscomm.protocol.ips.AlarmTag;
-import yction.com.vsicscomm.protocol.ips.AttachmentFileName;
-import yction.com.vsicscomm.protocol.ips.AttachmentInfo;
-import yction.com.vsicscomm.protocol.ips.AttachmentType;
-import yction.com.vsicscomm.protocol.ips.upload.UploadContent;
 import yction.com.vsicscomm.protocol.p808.CmdResp;
 import yction.com.vsicscomm.protocol.p808.MID;
 import yction.com.vsicscomm.protocol.p808.Msg;
@@ -38,7 +30,7 @@ public class AlarmAttachmentUploadReq extends CmdResp {
             Content c = new Content(msg.body());
             System.out.println(c.toString());
             // handle upload request
-            netService.UploadFile(c);
+            netService.uploadFile(c);
         } catch (ParseException e) {
             e.printStackTrace();
         }

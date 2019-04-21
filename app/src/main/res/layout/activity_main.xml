@@ -16,9 +16,30 @@
         android:text="Report" />
 
     <Button
-        android:id="@+id/ButtonConsole"
+        android:id="@+id/ButtonReportAdas"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Console" />
+        android:text="Report ADAS" />
+
+    <Button
+        android:id="@+id/ButtonReportDSM"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Report DSM" />
+
+    <Button
+        android:id="@+id/ButtonReportBSD"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Report BSD" />
+
+    <Button
+        android:id="@+id/ButtonReportTPMS"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Report TPMS" />
 </LinearLayout>

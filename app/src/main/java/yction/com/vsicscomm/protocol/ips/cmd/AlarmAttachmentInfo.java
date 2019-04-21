@@ -21,6 +21,7 @@ public class AlarmAttachmentInfo extends CmdReq {
     public String terminalId = Global.terminalId;
     // 报警标识号
     public AlarmTag alarmTag = new AlarmTag();
+
     public String alarmId = "";
     // 0x00：正常报警文件信息 0x01：补传报警文件信息
     public byte infoType;

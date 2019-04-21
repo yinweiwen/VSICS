@@ -12,25 +12,49 @@ import java.util.Date;
 public class AlarmADAS implements ReportExtra {
     public short Id = 0x64;
 
-    public long 报警ID = Global.alarmNo();
-    public byte 标志状态;
-    public byte 报警事件类型;
-    public byte 报警级别;
-    public byte 前车车速;
-    public byte 前车行人距离;
-    public byte 偏离类型;
-    public byte 道路标志识别类型;
-    public byte 道路标志识别数据;
-    public byte 车速;
-    public int 高程;
-    public double 纬度;
-    public double 经度;
-    public Date 日期时间 = new Date();
-    public int 车辆状态;
-    public AlarmTag 报警标识号 = new AlarmTag();
+    // 报警ID
+    public long alarmId;
+    // 标志状态
+    public byte tag;
+    // 报警/事件类型
+    public AlarmADASType type;
+    // 报警级别
+    public byte level;
+    // 前车车速
+    public byte frontCarSpeed;
+    // 前车行人距离
+    public byte frontPedestrianDistance;
+    // 偏离类型
+    public byte deviationType;
+    // 道路标志识别类型
+    public byte roadSignRecognitionType;
+    // 道路标志识别数据
+    public byte roadSignRecognitionData;
+    // 车速
+    public byte speed;
+    // 高程
+    public int height;
+    // 纬度
+    public double latitude;
+    // 经度
+    public double longitude;
+    // 日期时间
+    public Date date;
+    // 车辆状态
+    public int vehicleStatus;
+    // 报警标识号
+    public AlarmTag alarmTag;
 
-    public AlarmADAS() {
-
+    public AlarmADAS(ReportComm comm) {
+        alarmId = Global.alarmNo();
+        alarmTag = new AlarmTag();
+        date = new Date();
+        if (comm != null) {
+            speed = (byte) comm.speed;
+            height = comm.height;
+            latitude = comm.latitude;
+            longitude = comm.longitude;
+        }
     }
 
     @Override
@@ -41,22 +65,22 @@ public class AlarmADAS implements ReportExtra {
     @Override
     public byte[] getBytes() {
         ByteBufferUnsigned bb = new ByteBufferUnsigned(47);
-        bb.putUnsignedInt(报警ID);
-        bb.raw().put(标志状态);
-        bb.raw().put(报警事件类型);
-        bb.raw().put(报警级别);
-        bb.raw().put(前车车速);
-        bb.raw().put(前车行人距离);
-        bb.raw().put(偏离类型);
-        bb.raw().put(道路标志识别类型);
-        bb.raw().put(道路标志识别数据);
-        bb.raw().put(车速);
-        bb.putUnsignedShort(高程);
-        bb.putUnsignedInt((long) (纬度 * 1e6));
-        bb.putUnsignedInt((long) (经度 * 1e6));
-        bb.raw().put(Protocol.date2Bcd(日期时间));
-        bb.putUnsignedShort(车辆状态);
-        bb.raw().put(报警标识号.toBytes());
+        bb.putUnsignedInt(alarmId);
+        bb.raw().put(tag);
+        bb.raw().put(type.getState());
+        bb.raw().put(level);
+        bb.raw().put(frontCarSpeed);
+        bb.raw().put(frontPedestrianDistance);
+        bb.raw().put(deviationType);
+        bb.raw().put(roadSignRecognitionType);
+        bb.raw().put(roadSignRecognitionData);
+        bb.raw().put(speed);
+        bb.putUnsignedShort(height);
+        bb.putUnsignedInt((long) (latitude * 1e6));
+        bb.putUnsignedInt((long) (longitude * 1e6));
+        bb.raw().put(Protocol.date2Bcd(date));
+        bb.putUnsignedShort(vehicleStatus);
+        bb.raw().put(alarmTag.toBytes());
         return bb.raw().array();
     }
 }

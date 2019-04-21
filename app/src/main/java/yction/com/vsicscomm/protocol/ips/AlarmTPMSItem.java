@@ -7,7 +7,7 @@ import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
  */
 public class AlarmTPMSItem {
     // 报警轮胎位置编号
-    public byte 胎压报警位置;
+    public byte tireNum;
     /*
     bit0：胎压（定时上报）
     bit1：胎压过高报警
@@ -18,21 +18,30 @@ public class AlarmTPMSItem {
     bit6：慢漏气报警
     bit7：电池电量低报警
      */
-    public int 报警事件类型;
-    // 单位 Kpa
-    public int 胎压;
-    // 单位 ℃
-    public int 胎温;
-    // 单位 %
-    public int 电池电量;
+    // 报警事件类型
+    public int type;
+    // 胎压 单位 Kpa
+    public int tirePressure;
+    // 胎温 单位 ℃
+    public int tireTemperature;
+    // 电池电量 单位 %
+    public int power;
+
+    public AlarmTPMSItem(int num, int pres, int temp, int power, AlarmTPMSType... types) {
+        tireNum = (byte) num;
+        tirePressure = pres;
+        tireTemperature = temp;
+        this.power = power;
+        this.type = AlarmTPMSType.status(types);
+    }
 
     public byte[] toBytes() {
         ByteBufferUnsigned bb = new ByteBufferUnsigned(9);
-        bb.raw().put(胎压报警位置);
-        bb.putUnsignedShort(报警事件类型);
-        bb.putUnsignedShort(胎压);
-        bb.putUnsignedShort(胎温);
-        bb.putUnsignedShort(电池电量);
+        bb.raw().put(tireNum);
+        bb.putUnsignedShort(type);
+        bb.putUnsignedShort(tirePressure);
+        bb.putUnsignedShort(tireTemperature);
+        bb.putUnsignedShort(power);
         return bb.raw().array();
     }
 }

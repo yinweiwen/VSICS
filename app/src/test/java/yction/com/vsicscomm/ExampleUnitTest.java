@@ -1,7 +1,5 @@
 package yction.com.vsicscomm;
 
-import android.util.ArraySet;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,29 +11,22 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import yction.com.vsicscomm.protocol.ByteBufferUnsigned;
 import yction.com.vsicscomm.protocol.ips.AlarmADAS;
 import yction.com.vsicscomm.protocol.ips.AlarmTagState;
-import yction.com.vsicscomm.protocol.ips.AttachmentFileName;
-import yction.com.vsicscomm.protocol.ips.AttachmentInfo;
-import yction.com.vsicscomm.protocol.ips.AttachmentType;
 import yction.com.vsicscomm.protocol.ips.ReportComm;
 import yction.com.vsicscomm.protocol.ips.StateTagState;
-import yction.com.vsicscomm.protocol.ips.cmd.AlarmAttachmentInfo;
-import yction.com.vsicscomm.protocol.ips.cmd.FileInfo;
 import yction.com.vsicscomm.protocol.ips.cmd.Report;
 import yction.com.vsicscomm.protocol.ips.upload.FileFinishAck;
 import yction.com.vsicscomm.protocol.ips.upload.FileFinishAckItem;
-import yction.com.vsicscomm.protocol.ips.upload.UploadContent;
 import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.protocol.p808.MsgFrame;
 import yction.com.vsicscomm.utils.Utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -115,13 +106,6 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void testAttachmentFileName() {
-        System.out.println(AttachmentFileName.toFileName(AttachmentType.Picture,
-                0,
-                (byte) 0x64, (byte) 0x01, 1, "0102030123", "png"));
-    }
-
-    @Test
     public void testReportParse() throws ParseException {
         byte[] bts = Utils.hexStringToByteArray("7E0200005A010059107571072500080000000C00030160440A06C69889000600000000190416231440010400000000020200000302000014040000000015040000000016040000000017020000180200002504000000002A0200002B0400000000300149310117D47E");
 
@@ -159,8 +143,8 @@ public class ExampleUnitTest {
         comm.speed = 60;
         comm.direction = 30;
         comm.date = new Date();
-        AlarmADAS adas = new AlarmADAS();
-        adas.报警ID = 0;
+        AlarmADAS adas = new AlarmADAS(null);
+        adas.alarmId = 0;
         Report report = new Report(comm, adas);
 
         byte[] bts = report.msg().frames()[0].toBytes();
@@ -179,37 +163,6 @@ public class ExampleUnitTest {
         System.out.println(Utils.bytesToHexString(b1));
         byte[] b2 = Utils.getBytes("123908129417293712", 30, "GBK");
         System.out.println(Utils.bytesToHexString(b2));
-    }
-
-    @Test
-    public void testUploadContentConstruct() {
-        String aids = UUID.randomUUID().toString();
-        UploadContent content = new UploadContent();
-        content.ip = "192.168.0.1";
-        content.port = 20011;
-        content.alarmAttachmentInfo = new AlarmAttachmentInfo();
-        content.alarmAttachmentInfo.alarmId = aids;
-
-        byte cnt = 1;
-        content.alarmAttachmentInfo.attachNum = cnt;
-        content.alarmAttachmentInfo.attachmentInfos = new AttachmentInfo[cnt];
-
-        String filepath1 = "123457452";
-        long filesize1 = 102400;
-        String filename1 =
-                AttachmentFileName.toFileName(AttachmentType.Picture,
-                        0, (byte) 0x64, (byte) 0x01, 0,
-                        aids, "jpg");
-        content.alarmAttachmentInfo.attachmentInfos[0] = new AttachmentInfo();
-        content.alarmAttachmentInfo.attachmentInfos[0].filename = filename1;
-        content.alarmAttachmentInfo.attachmentInfos[0].filesize = filesize1;
-
-        content.fileInfos = new FileInfo[cnt];
-        content.fileInfos[0] = new FileInfo();
-        content.fileInfos[0].fileName = filename1;
-        content.fileInfos[0].filePath = filepath1;
-        content.fileInfos[0].at = AttachmentType.Picture;
-        content.fileInfos[0].fileSize = filesize1;
     }
 
     @Test

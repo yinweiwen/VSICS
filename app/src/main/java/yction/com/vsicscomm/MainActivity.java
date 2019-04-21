@@ -26,24 +26,47 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         // 启动服务
         bindService(new Intent(this, NetService.class), this, BIND_AUTO_CREATE);
 
-        final Button btnLogin = findViewById(R.id.ButtonReport);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        final Button btnReport = findViewById(R.id.ButtonReport);
+        btnReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (netService != null) {
-                    Log.i(TAG, "report ADAS");
-                    netService.reportADAS();
+                    Log.i(TAG, "report");
+                    netService.report();
                 }
             }
         });
 
-        final Button btnUpload = findViewById(R.id.ButtonConsole);
-        btnUpload.setOnClickListener(new View.OnClickListener() {
+        final Button btnReportAdas = findViewById(R.id.ButtonReportAdas);
+        btnReportAdas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (netService != null) {
-                    netService.getFileService().put(new UploadContent());
-                }
+                Log.i(TAG, "report ADAS");
+                netService.reportADAS();
+            }
+        });
+        final Button btnReportDsm = findViewById(R.id.ButtonReportDSM);
+        btnReportDsm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "report DSM");
+                netService.reportDSM();
+            }
+        });
+        final Button btnReportBsd = findViewById(R.id.ButtonReportBSD);
+        btnReportBsd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "report BSD");
+                netService.reportBSD();
+            }
+        });
+        final Button btnReportTpms = findViewById(R.id.ButtonReportTPMS);
+        btnReportTpms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "report TPMS");
+                netService.reportTPMS();
             }
         });
     }

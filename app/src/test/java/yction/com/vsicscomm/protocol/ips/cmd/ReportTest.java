@@ -9,8 +9,6 @@ import yction.com.vsicscomm.protocol.ips.ReportComm;
 import yction.com.vsicscomm.protocol.p808.Msg;
 import yction.com.vsicscomm.utils.Utils;
 
-import static org.junit.Assert.*;
-
 public class ReportTest {
     @Test
     public void onMsg() throws Exception {
@@ -24,8 +22,8 @@ public class ReportTest {
         comm.speed = 60;
         comm.direction = 30;
         comm.date = new Date();
-        AlarmADAS adas = new AlarmADAS();
-        adas.报警ID = 0;
+        AlarmADAS adas = new AlarmADAS(null);
+        adas.alarmId = 0;
         Report report = new Report(comm, adas);
         Msg msg = report.msg();
         System.out.println(msg.toString());

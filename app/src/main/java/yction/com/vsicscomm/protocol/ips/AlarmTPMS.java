@@ -12,17 +12,44 @@ import java.util.Date;
 public class AlarmTPMS implements ReportExtra {
     public short Id = 0x66;
 
-    public long 报警ID = Global.alarmNo();
-    public byte 标志状态;
-    public byte 车速;
-    public int 高程;
-    public double 纬度;
-    public double 经度;
-    public Date 日期时间 = new Date();
-    public int 车辆状态;
-    public AlarmTag 报警标识号 = new AlarmTag();
-    public byte 报警事件列表总数;
-    public AlarmTPMSItem[] 报警事件信息列表;
+    // 报警ID
+    public long alarmId;
+    // 标志状态
+    public byte tag;
+    // 车速
+    public byte speed;
+    // 高程
+    public int height;
+    // 纬度
+    public double latitude;
+    // 经度
+    public double longitude;
+    // 日期时间
+    public Date date;
+    // 车辆状态
+    public int vehicleStatus;
+    // 报警标识号
+    public AlarmTag alarmTag;
+    // 报警事件列表总数
+    public byte eventCount;
+    // 报警事件信息列表
+    public AlarmTPMSItem[] eventInfos;
+
+    public AlarmTPMS(ReportComm comm, AlarmTPMSItem[] tpmsItems) {
+        alarmId = Global.alarmNo();
+        alarmTag = new AlarmTag();
+        date = new Date();
+        if (comm != null) {
+            speed = (byte) comm.speed;
+            height = comm.height;
+            latitude = comm.latitude;
+            longitude = comm.longitude;
+        }
+        if (tpmsItems != null) {
+            eventCount = (byte) tpmsItems.length;
+            eventInfos = tpmsItems;
+        }
+    }
 
     @Override
     public short getId() {
@@ -33,18 +60,18 @@ public class AlarmTPMS implements ReportExtra {
     public byte[] getBytes() {
         ByteBufferUnsigned bb = new ByteBufferUnsigned(4096);
 
-        bb.putUnsignedInt(报警ID);
-        bb.raw().put(标志状态);
-        bb.raw().put(车速);
-        bb.putUnsignedShort(高程);
-        bb.putUnsignedInt((long) (纬度 * 1e6));
-        bb.putUnsignedInt((long) (经度 * 1e6));
-        bb.raw().put(Protocol.date2Bcd(日期时间));
-        bb.putUnsignedShort(车辆状态);
-        bb.raw().put(报警标识号.toBytes());
-        bb.raw().put(报警事件列表总数);
-        for (int i = 0; i < 报警事件列表总数; i++) {
-            bb.raw().put(报警事件信息列表[i].toBytes());
+        bb.putUnsignedInt(alarmId);
+        bb.raw().put(tag);
+        bb.raw().put(speed);
+        bb.putUnsignedShort(height);
+        bb.putUnsignedInt((long) (latitude * 1e6));
+        bb.putUnsignedInt((long) (longitude * 1e6));
+        bb.raw().put(Protocol.date2Bcd(date));
+        bb.putUnsignedShort(vehicleStatus);
+        bb.raw().put(alarmTag.toBytes());
+        bb.raw().put(eventCount);
+        for (int i = 0; i < eventCount; i++) {
+            bb.raw().put(eventInfos[i].toBytes());
         }
         int len = bb.raw().position();
         byte[] temp = new byte[len];
